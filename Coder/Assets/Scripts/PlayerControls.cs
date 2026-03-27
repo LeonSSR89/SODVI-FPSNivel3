@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -24,6 +25,7 @@ public class PlayerControls : MonoBehaviour
     [Header("Effects")]
     [SerializeField] private GameObject _hitParticleObject;
     [SerializeField] private Animator _gunholderAnimator;
+    [SerializeField] private AudioClip _emptySound;
     private GameObject _currentGun;
     private float _curSwitchCool;
     private int _curGunID = 0;
@@ -47,6 +49,7 @@ public class PlayerControls : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _playerInput = GetComponent<PlayerInput>();
+        _gunholderAnimator = GameObject.Find("/---- CORE ----/PlayerCamera/GunHolder").GetComponent<Animator>();
 
         _jumpCurCool = _jumpCooldown;
 
@@ -61,7 +64,7 @@ public class PlayerControls : MonoBehaviour
             SwitchGun(_starterGun);
         }
 
-        Cursor.lockState = CursorLockMode.Locked;
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -114,17 +117,33 @@ public class PlayerControls : MonoBehaviour
         }
 
         //Shooting
+        if (_reloading) {
+            if (_curShootCooldown <= 0) _reloading = false;
+            _WeaponLabel.transform.Find("AmmoLabel").GetComponent<TMP_Text>().SetText("... / " + _ammoCount[_gunstats.ammoType]);
+        }
         if (_playerInput.actions["Shoot"].IsPressed() && (_curShootCooldown <= 0) && (_currentGun!=null))
         {
+            _curShootCooldown = _gunstats.shootCooldown;
+
+
+
             if (_gunClips[_curGunID] <= 0) //Empty clip
             {
-                
+                Debug.Log("empty");
+                _camera.GetComponent<AudioSource>().PlayOneShot(_emptySound);
             }
             else {
                 Debug.Log("Dispara");
-                _curShootCooldown = _gunstats.shootCooldown;
+                
 
                 _gunClips[_gunstats.ammoType] --;
+                _camera.GetComponent<AudioSource>().PlayOneShot(_gunstats.shootSound);
+                _gunholderAnimator.ResetTrigger("Fire");
+                _gunholderAnimator.ResetTrigger("SmallFire");
+                if (_gunstats.shootCooldown <= 0.2) {
+                    _gunholderAnimator.SetTrigger("SmallFire");
+                }
+                else _gunholderAnimator.SetTrigger("Fire");
 
                 if (_currentGun.transform.Find("ParticleHolder") != null) _currentGun.transform.Find("ParticleHolder").GetComponent<ParticleSystem>().Play();
                 
@@ -134,6 +153,7 @@ public class PlayerControls : MonoBehaviour
 
                     _hitParticleObject.transform.position = _rayInfo.point;
                     _hitParticleObject.GetComponent<ParticleSystem>().Play();
+                    _hitParticleObject.GetComponent<AudioSource>().Play();
 
                     if ((_rayInfo.collider.gameObject.GetComponent<Health>() != null) && (_rayInfo.collider.gameObject!=gameObject)) {
                         _rayInfo.collider.gameObject.GetComponent<Health>().TakeDamage(_gunstats.damage);
@@ -148,10 +168,7 @@ public class PlayerControls : MonoBehaviour
             Reload();
         }
 
-        if (_reloading) {
-            if (_curShootCooldown <= 0) _reloading = false;
-            _WeaponLabel.transform.Find("AmmoLabel").GetComponent<TMP_Text>().SetText("... / " + _ammoCount[_gunstats.ammoType]);
-        }
+        
         
         if (!_reloading) _WeaponLabel.transform.Find("AmmoLabel").GetComponent<TMP_Text>().SetText(_gunClips[_curGunID] + " / " + _ammoCount[_gunstats.ammoType] );
     }
@@ -169,8 +186,10 @@ public class PlayerControls : MonoBehaviour
         if ( (!(_curShootCooldown <= 0 && _currentGun!=null)) || _ammoCount[_gunstats.ammoType]<=0) return;
         _curShootCooldown = 3;
         _curSwitchCool = 3;
+        _camera.GetComponent<AudioSource>().PlayOneShot(_gunstats.reloadSound);
 
-        //_gunholderAnimator.SetTrigger("Reload");
+        _gunholderAnimator.ResetTrigger("Reload");
+        _gunholderAnimator.SetTrigger("Reload");
 
         _reloading = true;
         if ((_gunstats.clipSize - _gunClips[_curGunID]) <= _ammoCount[_gunstats.ammoType])
@@ -195,12 +214,12 @@ public class PlayerControls : MonoBehaviour
         _currentGun.transform.localScale = Vector3.one;
         if (gun.name != "Pistol") _currentGun.transform.Rotate(Vector3.up * 90, Space.Self); //offset for guns
         _gunstats = _currentGun.GetComponent<GunStats>();
-
+        _WeaponLabel.transform.Find("GunImage").GetComponent<Image>().sprite = _gunstats.UIImage;
+        _WeaponLabel.transform.Find("TypeLabel").GetComponent<Image>().sprite = _WeaponLabel.transform.Find("TypeLabel").GetComponent<TypeImages>().AmmoImages[_gunstats.ammoType];
 
         for (int i = 0; i < _gunList.Count; i++)
         {
             if (_gunList[i] == gun) _curGunID = i;
-            Debug.Log(_gunList[i] == gun);
         }
     }
 

@@ -43,6 +43,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6704957173481469316}
   - component: {fileID: 8390812545143703061}
+  - component: {fileID: 1621193759121341004}
   m_Layer: 0
   m_Name: Rifle
   m_TagString: Untagged
@@ -84,6 +85,31 @@ MonoBehaviour:
   shootCooldown: 0.1
   ammoType: 1
   clipSize: 30
+  shootSound: {fileID: 8300000, guid: b33e2cff5225f4437a43a11d35763d46, type: 3}
+  reloadSound: {fileID: 8300000, guid: e5198250a6a57408bb36e14bc4a322c4, type: 3}
+  UIImage: {fileID: 21300000, guid: 1a067744132bb7e46b891d230b55d8d7, type: 3}
+--- !u!95 &1621193759121341004
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281065094455489851}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cf8c4356b0eda5a4ab60bac5c3908baf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2012648068428764658
 GameObject:
   m_ObjectHideFlags: 0

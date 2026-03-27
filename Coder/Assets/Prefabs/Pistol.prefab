@@ -5135,3 +5135,7 @@ MonoBehaviour:
   shootCooldown: 0.5
   ammoType: 0
   clipSize: 12
+  shootSound: {fileID: 8300000, guid: 2203773368e4340d98c114f55c2dd7fd, type: 3}
+  reloadSound: {fileID: 8300000, guid: e5198250a6a57408bb36e14bc4a322c4, type: 3}
+  UIImage: {fileID: 21300000, guid: 51ebc1d72924ed9448be8ae5cfc9ddad, type: 3}
+  coolbackAnim: {fileID: 7400000, guid: 5911024a3bd122347bb182a101f91543, type: 2}
