@@ -67,10 +67,9 @@ public class PlayerControls : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
-        //Movement
+        //Movimiento
         _input = _playerInput.actions["Move"].ReadValue<Vector2>();
         if (_playerInput.actions["Sprint"].IsPressed()) _newSpeed = _speed*_speedMult;
         else _newSpeed = _speed;
@@ -91,7 +90,7 @@ public class PlayerControls : MonoBehaviour
 
     void Update ()
     {
-        //Camera
+        //Camara
         _input = _playerInput.actions["Look"].ReadValue<Vector2>();
         gameObject.transform.Rotate(new Vector3 (0,_input.x*_lookSpeed*Time.fixedDeltaTime,0), Space.Self);
 
@@ -105,7 +104,7 @@ public class PlayerControls : MonoBehaviour
         } 
         _camera.transform.Rotate(new Vector3(_lookY,0,0), Space.Self);
 
-        //Switch guns
+        //Cambiar armas
         if ((_playerInput.actions["SwitchGun"].ReadValue<Vector2>().y != 0.0) && (_curSwitchCool<= 0))
         {
             _curSwitchCool = 0.5f;
@@ -116,7 +115,7 @@ public class PlayerControls : MonoBehaviour
             SwitchGun(_gunList[_curGunID]);
         }
 
-        //Shooting
+        //Disparar
         if (_reloading) {
             if (_curShootCooldown <= 0) _reloading = false;
             _WeaponLabel.transform.Find("AmmoLabel").GetComponent<TMP_Text>().SetText("... / " + _ammoCount[_gunstats.ammoType]);
@@ -127,12 +126,12 @@ public class PlayerControls : MonoBehaviour
 
 
 
-            if (_gunClips[_curGunID] <= 0) //Empty clip
+            if (_gunClips[_curGunID] <= 0) //Sin munición
             {
                 Debug.Log("empty");
                 _camera.GetComponent<AudioSource>().PlayOneShot(_emptySound);
             }
-            else {
+            else {                         //Con munición (disparo)
                 Debug.Log("Dispara");
                 
 
@@ -147,7 +146,7 @@ public class PlayerControls : MonoBehaviour
 
                 if (_currentGun.transform.Find("ParticleHolder") != null) _currentGun.transform.Find("ParticleHolder").GetComponent<ParticleSystem>().Play();
                 
-                if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformVector(Vector3.forward), out _rayInfo, _gunstats.range))
+                if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformVector(Vector3.forward), out _rayInfo, _gunstats.range, LayerMask.GetMask("Default")))
                 {
                     Debug.Log("Hitobject: " + _rayInfo.collider.gameObject.name);
 
@@ -173,6 +172,7 @@ public class PlayerControls : MonoBehaviour
         if (!_reloading) _WeaponLabel.transform.Find("AmmoLabel").GetComponent<TMP_Text>().SetText(_gunClips[_curGunID] + " / " + _ammoCount[_gunstats.ammoType] );
     }
 
+    //Salto
     void OnJump()
     {
         if (!_canJump || !_characterController.isGrounded) return;
@@ -181,6 +181,7 @@ public class PlayerControls : MonoBehaviour
         _jumpCurCool = _jumpCooldown;
     }
 
+    //Recarga de arma
     void Reload()
     {
         if ( (!(_curShootCooldown <= 0 && _currentGun!=null)) || _ammoCount[_gunstats.ammoType]<=0) return;
@@ -204,6 +205,7 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
+    //Cambiar arma física
     void SwitchGun (GameObject gun)
     {
         Destroy(_currentGun);
