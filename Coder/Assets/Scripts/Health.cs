@@ -5,9 +5,9 @@ using System.Collections;
 public class Health : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    [SerializeField] private float _health;
+    public float _health;
     [SerializeField] private float _maxHealth, _disappearTime;
-    [SerializeField] private GameObject _camera, _hitGuiItem, _guiCanvas, _healthbar;
+    [SerializeField] private GameObject _camera, _hitGuiItem, _guiCanvas, _healthbar, _loseMenu;
     private CinemachineBasicMultiChannelPerlin _perlinNoise;
     private bool _dying = false;
 
@@ -35,6 +35,10 @@ public class Health : MonoBehaviour
             Destroy(gameObject.GetComponent<Collider>());
             Destroy(gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>());
             //Debug.Log(GetComponent<Animator>());
+            if (tag == "Player") {
+                UnityEngine.Cursor.lockState = CursorLockMode.None;
+                _loseMenu.SetActive(true);
+            }
             if (GetComponent<Animator>()!=null)
             {
                 GetComponent<Animator>().SetTrigger("Death");
