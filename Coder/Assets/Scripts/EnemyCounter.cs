@@ -5,7 +5,7 @@ using TMPro;
 
 public class EnemyCounter : MonoBehaviour
 {
-    [SerializeField] GameObject _enemyParent, _winMenu;
+    [SerializeField] GameObject _enemyParent, _winMenu, _player;
     private int _childCount, _aliveEnemyCount;
     private List<GameObject> EnemyList = new List<GameObject>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -31,8 +31,10 @@ public class EnemyCounter : MonoBehaviour
         }
         GetComponent<TMP_Text>().SetText(_aliveEnemyCount + " / " + _childCount );
         if (_aliveEnemyCount == 0) {
+            Time.timeScale = 0.3f;
             _winMenu.SetActive(true);
             UnityEngine.Cursor.lockState = CursorLockMode.None;
+            if (_player != null) Destroy(_player);
         }
     }
 }
