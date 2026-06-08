@@ -2648,14 +2648,17 @@ MonoBehaviour:
   _speedMult: 1.5
   _jumpPower: 30
   _lookSpeed: 20
-  _starterGun: {fileID: 8148670049374792805, guid: 2acd6cd8c04845040ac75d91f355bb23, type: 3}
+  _starterGun: {fileID: 2688822395987061292, guid: b1c79838b01f89b448f152fc4fbbc2ba, type: 3}
   _gunList:
+  - {fileID: 2688822395987061292, guid: b1c79838b01f89b448f152fc4fbbc2ba, type: 3}
   - {fileID: 8148670049374792805, guid: 2acd6cd8c04845040ac75d91f355bb23, type: 3}
   _ammoCount: 14000000320000000a000000
   _WeaponLabel: {fileID: 1338954364}
   _hitParticleObject: {fileID: 1551738054}
+  _hitEnemyParticle: {fileID: 0}
   _gunholderAnimator: {fileID: 0}
   _emptySound: {fileID: 8300000, guid: 6555534fb99726c4baf61cf779be54c9, type: 3}
+  _pauseMenu: {fileID: 0}
 --- !u!114 &1383104552
 MonoBehaviour:
   m_ObjectHideFlags: 0

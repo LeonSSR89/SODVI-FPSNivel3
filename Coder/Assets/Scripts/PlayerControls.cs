@@ -24,8 +24,10 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Effects")]
     [SerializeField] private GameObject _hitParticleObject;
+    [SerializeField] private GameObject _hitEnemyParticle;
     [SerializeField] private Animator _gunholderAnimator;
     [SerializeField] private AudioClip _emptySound;
+    [SerializeField] private GameObject _pauseMenu;
     private GameObject _currentGun;
     private float _curSwitchCool;
     private int _curGunID = 0;
@@ -90,6 +92,7 @@ public class PlayerControls : MonoBehaviour
 
     void Update ()
     {
+        if (Time.timeScale != 1) return;
         //Camara
         _input = _playerInput.actions["Look"].ReadValue<Vector2>();
         gameObject.transform.Rotate(new Vector3 (0,_input.x*_lookSpeed*Time.fixedDeltaTime,0), Space.Self);
@@ -133,9 +136,8 @@ public class PlayerControls : MonoBehaviour
             }
             else {                         //Con munición (disparo)
                 Debug.Log("Dispara");
-                
 
-                _gunClips[_gunstats.ammoType] --;
+                _gunClips[_curGunID] --;
                 _camera.GetComponent<AudioSource>().PlayOneShot(_gunstats.shootSound);
                 _gunholderAnimator.ResetTrigger("Fire");
                 _gunholderAnimator.ResetTrigger("SmallFire");
@@ -146,18 +148,29 @@ public class PlayerControls : MonoBehaviour
 
                 if (_currentGun.transform.Find("ParticleHolder") != null) _currentGun.transform.Find("ParticleHolder").GetComponent<ParticleSystem>().Play();
                 
-                if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformVector(Vector3.forward), out _rayInfo, _gunstats.range, LayerMask.GetMask("Default")))
+                //Hit Enemy
+                if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformVector(Vector3.forward), out _rayInfo, _gunstats.range, LayerMask.GetMask("Enemy")))
                 {
-                    Debug.Log("Hitobject: " + _rayInfo.collider.gameObject.name);
-
-                    _hitParticleObject.transform.position = _rayInfo.point;
-                    _hitParticleObject.GetComponent<ParticleSystem>().Play();
-                    _hitParticleObject.GetComponent<AudioSource>().Play();
+                    if (_hitEnemyParticle != null){
+                        _hitEnemyParticle.transform.position = _rayInfo.point;
+                        _hitEnemyParticle.GetComponent<ParticleSystem>().Play();
+                        _hitEnemyParticle.GetComponent<AudioSource>().Play();
+                    }
 
                     if ((_rayInfo.collider.gameObject.GetComponent<Health>() != null) && (_rayInfo.collider.gameObject!=gameObject)) {
                         _rayInfo.collider.gameObject.GetComponent<Health>().TakeDamage(_gunstats.damage);
                     }
                 }
+
+                //Hit Environment
+                else if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformVector(Vector3.forward), out _rayInfo, _gunstats.range, LayerMask.GetMask("Default")))
+                {
+                    _hitParticleObject.transform.position = _rayInfo.point;
+                    _hitParticleObject.GetComponent<ParticleSystem>().Play();
+                    _hitParticleObject.GetComponent<AudioSource>().Play();
+                }
+
+                
             }
         } 
 
@@ -179,6 +192,25 @@ public class PlayerControls : MonoBehaviour
         _canJump = false;
         _curJumpPower = _jumpPower;
         _jumpCurCool = _jumpCooldown;
+    }
+
+    public void OnPause()
+    {
+        if (_pauseMenu != null)
+        {
+            _pauseMenu.SetActive(!_pauseMenu.activeSelf);
+        }
+        if (Time.timeScale == 0)
+        {
+            Time.timeScale = 1;
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        } 
+        else
+        {
+            Time.timeScale = 0;
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+        }
+
     }
 
     //Recarga de arma

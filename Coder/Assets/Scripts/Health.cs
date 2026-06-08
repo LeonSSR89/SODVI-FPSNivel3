@@ -37,6 +37,7 @@ public class Health : MonoBehaviour
             //Debug.Log(GetComponent<Animator>());
             if (tag == "Player") {
                 UnityEngine.Cursor.lockState = CursorLockMode.None;
+                Time.timeScale = 0.3f;
                 _loseMenu.SetActive(true);
             }
             if (GetComponent<Animator>()!=null)

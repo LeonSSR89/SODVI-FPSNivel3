@@ -81,7 +81,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunStats
   range: 75
-  damage: 100
+  damage: 25
   shootCooldown: 0.1
   ammoType: 1
   clipSize: 30
